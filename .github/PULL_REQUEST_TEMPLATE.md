@@ -17,6 +17,8 @@ Closes #
    git checkout <nome-da-branch>
 
 ## 📋 Checklist
+- [ ] Dei Pull antes de iniciar o código
+- [ ] Criei a branch usando o padrão: feat(nome-da-feature)
 - [ ] Fiz uma auto-revisão do meu próprio código antes de abrir o PR.
 - [ ] Testei localmente e a alteração funciona conforme o esperado.
 - [ ] Os dados persistem corretamente no JSON após minhas mudanças.
