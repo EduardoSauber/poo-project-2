@@ -9,7 +9,11 @@ class Pessoa(ABC):
         self._nome = nome
         self.email = email
         self.idade = idade
-        self.__senha = senha if db_read else self.set_senha(senha)
+        if db_read:
+            self.__senha = senha
+        else:
+            self.set_senha(senha)
+
 
     @abstractmethod
     def to_dict(self,publico:bool=True) -> dict[str,Any]:
