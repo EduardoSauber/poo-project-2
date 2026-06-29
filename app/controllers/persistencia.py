@@ -32,11 +32,11 @@ class GerenciadorPersistencia:
         try:
             with open(f"{self.caminho}/{banco_dados}.json","w",encoding="utf-8") as ARQUIVO:
                 json.dump(dados,ARQUIVO)
-                print(f"n\(PERSISTENCIA - SALVAR) Banco de dados '{banco_dados}' salvo.")
+                print(f"\n(PERSISTENCIA - SALVAR) Banco de dados '{banco_dados}' salvo.")
         except Exception as e:
             print(f"\n(PERSISTENCIA - SALVAR) Erro ao salvar banco de dados '{banco_dados}': {e}")
 
-    def carregar_dados(self,mercado:Mercado,autenticador:GerenciadorAutenticacao):
+    def carregar_dados(self,mercado:Mercado):
         try:
             with open(f"{self.caminho}/produtos.json","r",encoding="utf-8") as ARQUIVO:
                 dados = json.load(ARQUIVO)
@@ -48,7 +48,14 @@ class GerenciadorPersistencia:
                         qtd_estoque = p_dict['qtd_estoque']
                     )
                     mercado.cadastrar_produto(novo_produto)
+        except FileNotFoundError:
+            print(f"\n(PERSISTENCIA - CARREGAR) Banco de dados não encontrado.")
+        except json.JSONDecodeError:
+            print(f"\n(PERSISTENCIA - CARREGAR) Arquivo de dados corrompido.")
+        except Exception as e:
+            print(f"\n(PERSISTENCIA - CARREGAR) Erro ao carregar dados: {e}")
 
+        try:
             with open(f"{self.caminho}/clientes.json","r",encoding="utf-8") as ARQUIVO_2:
                 dados_2 = json.load(ARQUIVO_2)
                 for c_dict in dados_2:
@@ -60,7 +67,7 @@ class GerenciadorPersistencia:
                         senha   = c_dict['senha'],
                         db_read = True
                     )
-                    autenticador.cadastrar_cliente(mercado=mercado,cliente=novo_cliente)
+                    mercado.cadastrar_cliente(cliente=novo_cliente)
                     novo_cliente.set_saldo(c_dict['saldo'])
                     for item in c_dict['carrinho']['itens']:
                         prod_dict = item['produto']
@@ -74,7 +81,14 @@ class GerenciadorPersistencia:
                             novo_cliente.carrinho.adicionar_ao_carrinho(produto_recuperado,qtd)
                         else:
                             print(f"Produto '{prod_dict['id']}' não existe mais no mercado.")
+        except FileNotFoundError:
+            print(f"\n(PERSISTENCIA - CARREGAR) Banco de dados não encontrado.")
+        except json.JSONDecodeError:
+            print(f"\n(PERSISTENCIA - CARREGAR) Arquivo de dados corrompido.")
+        except Exception as e:
+            print(f"\n(PERSISTENCIA - CARREGAR) Erro ao carregar dados: {e}")
 
+        try:
             with open(f"{self.caminho}/administradores.json","r",encoding="utf-8") as ARQUIVO_3:
                 dados_3 = json.load(ARQUIVO_3)
                 for a_dict in dados_3:
@@ -86,13 +100,12 @@ class GerenciadorPersistencia:
                         senha   = a_dict['senha'],
                         db_read = True
                     )
-                    autenticador.cadastrar_administrador(mercado=mercado,administrador=novo_admin)
-
+                    mercado.cadastrar_administrador(administrador=novo_admin)
         except FileNotFoundError:
-            print(f"n\(PERSISTENCIA - CARREGAR) Banco de dados não encontrado.")
+            print(f"\n(PERSISTENCIA - CARREGAR) Banco de dados não encontrado.")
         except json.JSONDecodeError:
-            print(f"n\(PERSISTENCIA - CARREGAR) Arquivo de dados corrompido.")
+            print(f"\n(PERSISTENCIA - CARREGAR) Arquivo de dados corrompido.")
         except Exception as e:
-            print(f"n\(PERSISTENCIA - CARREGAR) Erro ao carregar dados: {e}")
+            print(f"\n(PERSISTENCIA - CARREGAR) Erro ao carregar dados: {e}")
 
         return True
