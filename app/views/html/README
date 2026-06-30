@@ -1,0 +1,9 @@
+
+------------------------------------------------------
+COMO COLOCAR CSS E REBASE NA PAGINA CRIADA:
+
+% # Passa o link do arquivo CSS externo
+% link_css = '<link rel="stylesheet" href="/static/css/carrinho.css">'
+
+% rebase('base.tpl', titulo_pagina='Meu Carrinho', logado=True, css_extra=link_css)
+-------------------------------------------------------

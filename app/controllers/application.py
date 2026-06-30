@@ -15,3 +15,11 @@ class Application():
 
     def helper(self):
         return template('app/views/html/helper')
+
+    def home(self,info):
+        return template('home',
+                        logado = False,
+                        usuario_admin = False,
+                        titulo_pagina='Pagina Inicial',
+                        usuario_nome='PLACEHOLDER',
+                        )
