@@ -22,7 +22,7 @@ def helper(info= None):
 #-----------------------------------------------------------------------------
 # Suas rotas aqui:
 
-@app.route('/home')
+@app.route('/home', methods=['GET'])
 def home(info=None):
     return ctl.render('home')
 
