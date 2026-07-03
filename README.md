@@ -1,16 +1,31 @@
 # Projeto Final de Mercado E-Commerce (Mercadinho) (POO-2)
 
-muitos textos explicando o projeto aqui!!!
+Este é um sistema de Mercadinho e-commerce desenvolvido em __Python__, focado nos conceitos de __Programação Orientada a Objetos (POO)__ e Persistência de Dados, construído em volta de um sistema website pelo __Bottle__.
 
-Projeto baseado com o modelo [BMVC](https://github.com/hgmachine/bmvc_start_from_this) desenvolvido pelo professor de [Programação Orientada a Objetos (POO)]() Henrique G. de Moura, Universidade de Brasília (UnB).
-
----
-
-## Estrutura
+Projeto baseado no modelo [BMVC](https://github.com/hgmachine/bmvc_start_from_this) desenvolvido pelo professor de Programação Orientada a Objetos (POO) Henrique G. de Moura, Universidade de Brasília (UnB).
 
 ---
 
-## Rodando o Sistema
+## Estrutura de Pastas:
+
+~~~
+poo-project-2/
+└── app/
+    ├── controllers/
+    │   └── data/
+    ├── models/
+    ├── static/
+    │   ├── css/
+    │   ├── img/
+    │   └── js/
+    └── views/
+        └── html/
+~~~
+
+
+---
+
+## Como executar o sistema:
 
 ###  1. BMVC pelo BASH/PowerShell/Cmd:
 
@@ -96,8 +111,6 @@ docker build -t bmvc-app .
 ```
 docker run --name bmvcapp -p 8080:8080 -v $(pwd):/bmeta bmvc-app
 ```
-
----
 
 - No Windows (Cmd)
 ```
