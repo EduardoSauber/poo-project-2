@@ -6,6 +6,11 @@ from app.models.cliente import Cliente
 from app.models.administrador import Administrador
 from app.controllers.autenticacao import GerenciadorAutenticacao
 
+'''
+No arquivo de 'dependências' para o Docker, existe o filelock. Ele pode ser muito útil para evitar que dados sejam
+corrompidos na hora de ler/gravar. - Eduardo
+'''
+
 class GerenciadorPersistencia:
     def __init__(self,caminho_db:str=os.path.join(os.path.dirname(os.path.abspath(__file__)),"db")):
         self.caminho = caminho_db
