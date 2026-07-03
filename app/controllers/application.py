@@ -7,19 +7,18 @@ class Application():
 
     def __init__(self):
         self.pages = {
-            'home'  : self.home({})
+            'home'  : self.home()
         }
 
 
     def render(self,page):
-       content = self.pages.get(page, self.helper)
+       content = self.pages.get(page, self.helper())
        return content
-
 
     def helper(self):
         return template('app/views/html/helper')
 
-    def home(self,info:dict[str,Any]):
+    def home(self):
         lista_produtos = [
             {'nome': 'PLACEHOLDER','preco':'12,34'},
             {'nome': 'PLACEHOLDER','preco':'12,34'},
