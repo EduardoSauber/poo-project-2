@@ -1,7 +1,8 @@
 .venv/
 .idea/
+.vscode/
 /__pycache__/*
+.app/controllers/db/*.json
 *.pyc
 *.pyo
 *.pyd
-.app/controllers/db/*.json
