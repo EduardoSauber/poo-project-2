@@ -104,6 +104,7 @@ cd poo-project-2
 ```
 docker build -t bmvc-app .
 ```
+<small>Em sistemas Linux, digite "__sudo__" antes do comando do Docker.</small>
 
 #### 5. Execute o contêiner:
 
@@ -111,6 +112,7 @@ docker build -t bmvc-app .
 ```
 docker run --name bmvcapp -p 8080:8080 -v $(pwd):/bmeta bmvc-app
 ```
+<small>Em sistemas Linux, digite "__sudo__" antes do comando do Docker.</small>
 
 - No Windows (Cmd)
 ```
