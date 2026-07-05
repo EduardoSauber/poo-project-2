@@ -3,51 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ get('titulo_pagina', 'Mercadinho') }}</title>
-    <style>
-        /* Organização Cabeçalho */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #f4f4f4;
-
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .btn {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
-    <!-- Para injetar CSS mais bonito pelas páginas que vão herdar essa base -->
+    <link rel="stylesheet" href="static/css/base.css">
     {{!get('css_extra','') }}
 </head>
 <body>
     <header>
         <nav class="navbar">
-            <button class="btn" onclick="location.href='/home'">Página Inicial</button>
+            <button class="btn-navbar" onclick="location.href='/'">
+                <div class="btn-navbar-content">
+                    <img src="static/img/home-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
+                    Página Inicial
+                </div>
+            </button>
                 % if get('logado',False):
                     % if get('usuario_admin',False):
-                        <button class="btn" onclick="location.href='/dashboard'">Painel de Gerenciamento</button>
+                        <button class="btn-navbar" onclick="location.href='/dashboard'">
+                            <div class="btn-navbar-content">
+                                <img src="static/img/settings-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
+                                Painel de Gerenciamento
+                            </div>
+                        </button>
                     % else:
-                        <button class="btn" onclick="location.href='/cart'">Meu Carrinho</button>
+                        <button class="btn-navbar" onclick="location.href='/cart'">
+                            <div class="btn-navbar-content">
+                                <img src="static/img/cart-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
+                                Meu Carrinho
+                            </div>
+                        </button>
                     % end
                 % end
         </nav>
         <nav class="user">
             % if get('logado',False):
                 <p>Bem-vindo, {{ usuario_nome }}!</p>
-                <button class="btn" onclick="location.href='/logout'">Sair</button>
+                <button class="btn-navbar" onclick="location.href='/logout'">
+                    <div class="btn-navbar-content">
+                        <img src="static/img/logout-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
+                        Sair
+                    </div>
+                </button>
             % else:
-                <button class="btn" onclick="location.href='/login'">Logar</button>
+                <button class="btn-navbar" onclick="location.href='/login'">
+                    <div class="btn-navbar-content">
+                        <img src="static/img/login-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
+                        Logar
+                    </div>
+                </button>
             % end
         </nav>
     </header>

@@ -1,0 +1,42 @@
+/* home.css */
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f4f4f4;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-navbar {
+    padding: 6px 12px;
+    background-color: #dddddd;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-navbar:hover {
+    transform: scale(1.05);
+}
+.btn-navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
