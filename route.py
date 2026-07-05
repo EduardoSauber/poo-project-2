@@ -18,11 +18,14 @@ def serve_static(filepath):
 def helper(info= None):
     return ctl.render('helper')
 
+@app.error(404)
+def error404(error):
+    return template('app/views/html/404',erro=error.status,req_url=request.url)
 
 #-----------------------------------------------------------------------------
 # Suas rotas aqui:
 
-@app.route('/home', methods=['GET'])
+@app.route('/', methods=['GET'])
 def home(info=None):
     return ctl.render('home')
 

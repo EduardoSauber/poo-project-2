@@ -1,16 +1,21 @@
 # Usar a imagem base do Python
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Definir o diretório de trabalho
 WORKDIR /bmeta
 
-# Atualizar o pip e instalar as bibliotecas necessárias
-RUN pip install --upgrade pip && \
-    pip install bottle eventlet python-socketio reportlab jinja2 pytz filelock
+# Instalar as bibliotecas necessárias
+COPY requirements.txt .
 
-# Expor a porta que o aplicativo usa
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copia o restante dos arquivos do projeto
+COPY . .
+
+# Expor a porta que o Bottle vai usar
 EXPOSE 8080
 
 # Comando para executar a aplicação
-CMD ["python3", "route.py"]
+CMD ["python", "route.py"]
 
