@@ -16,7 +16,7 @@ class Application():
         self.gerenciador_persistencia = GerenciadorPersistencia()
         self.mercado = Mercado()
         self.gerenciador_persistencia.carregar_dados(self.mercado)
-        
+
     def render(self,page):
        content = self.pages.get(page, self.helper())
        return content
@@ -82,3 +82,9 @@ class Application():
                         usuario_nome='PLACEHOLDER',
                         lista_produtos=lista_produtos
                         )
+    def login(self, cpf, senha):
+        return self.gerenciador_autenticacao.autenticar(self.mercado, cpf, senha)
+
+    def logout(self, id_sessao):
+        return self.gerenciador_autenticacao.logout(id_sessao)
+        
