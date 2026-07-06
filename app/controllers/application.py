@@ -2,6 +2,9 @@ from typing import Any
 
 from bottle import template
 
+from app.models.mercado import Mercado
+from app.controllers.autenticacao import GerenciadorAutenticacao
+from app.controllers.persistencia import GerenciadorPersistencia
 
 class Application():
 
@@ -9,8 +12,11 @@ class Application():
         self.pages = {
             'home'  : self.home()
         }
-
-
+        self.gerenciador_autenticacao = GerenciadorAutenticacao()
+        self.gerenciador_persistencia = GerenciadorPersistencia()
+        self.mercado = Mercado()
+        self.gerenciador_persistencia.carregar_dados(self.mercado)
+        
     def render(self,page):
        content = self.pages.get(page, self.helper())
        return content
