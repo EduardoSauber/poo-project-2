@@ -6,6 +6,7 @@ from app.models.mercado import Mercado
 from app.controllers.autenticacao import GerenciadorAutenticacao
 from app.controllers.persistencia import GerenciadorPersistencia
 from app.models.administrador import Administrador
+from app.models.cliente import Cliente
 
 class Application():
 
@@ -112,3 +113,28 @@ class Application():
 
     def get_usuario_logado(self, id_sessao):
         return self.gerenciador_autenticacao.get_usuario_por_id_sessao(id_sessao)
+
+    def get_cadastro_page(self, erro=None):
+        return template('app/views/html/cadastro', erro=erro)
+        
+    def cadastrar_cliente(self, dados: dict) -> dict:
+        nome = dados.get('nome')
+        cpf = dados.get('cpf')
+        email = dados.get('email')
+        idade = dados.get('idade')
+        senha = dados.get('senha')
+
+        if not nome or not cpf or not email or not idade or not senha:
+            return {'ok': False, 'erro': 'Preencha todos os campos.'}
+
+        if len(senha) < 6:
+            return {'ok': False, 'erro': 'A senha deve ter no mínimo 6 caracteres.'}
+
+        cliente = Cliente(cpf, nome, email, int(idade), senha, db_read=False)
+
+        if not self.mercado.cadastrar_cliente(cliente):
+            return {'ok': False, 'erro': 'CPF já cadastrado.'}
+
+        self.gerenciador_persistencia.salvar_clientes(self.mercado)
+        return {'ok': True}
+
