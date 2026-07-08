@@ -75,9 +75,17 @@ def requer_admin(func):
             return redirect('/login')
         return func(*args, **kwargs)
     return wrapper
+
+
+@app.route('/admin', method=['GET'])
+@requer_admin
+def admin_dashboard():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao) # requer_admin poderia retornar o usuário
+    return ctl.render_admin_dashboard(usuario)
 #-----------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
 
-    run(app, host='0.0.0.0', port=8080, debug=True)
+    run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)

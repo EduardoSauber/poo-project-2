@@ -1,0 +1,28 @@
+.dashboard{
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.dash-btn{
+    flex: 1;
+    background-color: #dddddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    transition: transform 0.2s;
+}
+.dash-btn:hover{
+    transform: scale(1.05);
+}
+.dash-btn-titulo { 
+    font-size: 24px; 
+    font-weight: bold; 
+}
