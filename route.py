@@ -46,7 +46,7 @@ def login_handler(info=None):
             response.set_cookie('sessao', id_sessao, secret='chave-secreta')
             usuario = ctl.get_usuario_logado(id_sessao)
             if isinstance(usuario, Administrador):
-                return redirect('/dashboard')
+                return redirect('/admin')
             else:
                 return redirect('/vitrine')
         return ctl.get_login_page(erro='CPF ou senha incorretos.')
