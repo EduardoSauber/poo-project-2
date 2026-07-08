@@ -120,36 +120,47 @@ def admin_dashboard():
 def admin_dashboard_produtos():
     id_sessao = request.get_cookie('sessao', secret='chave-secreta')
     usuario = ctl.get_usuario_logado(id_sessao)
-    return ctl.render_admin_produtos(usuario)
+
+    erro = request.get_cookie('notif-erro',secret='erro_secreto')
+    if erro:
+        response.delete_cookie('notif-erro', path='/')
+    return ctl.render_admin_produtos(usuario,erro)
 
 @app.route('/admin/produtos/criar', method=['POST'])
 @requer_admin
-def admin_create_product():
+def admin_create_produto():
     product_data = {
-        'nome'          : request.forms.get('nome'),
+        'nome'          : request.forms.get('nome').encode('iso-8859-1').decode('utf-8'),
         'preco'         : float(request.forms.get('preco')),
         'qtd_estoque'   : int(request.forms.get('quantidade'))
     }
-    ctl.cadastrar_produto(data=product_data)
+    evento = ctl.cadastrar_produto(data=product_data)
+    if not evento.get('ok'):
+        response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
     redirect('/admin/produtos')
 
 @app.route('/admin/produtos/excluir/<nome>', method=['POST'])
 @requer_admin
 def admin_delete_produto(nome):
-    ctl.excluir_produto(nome=nome)
+    evento = ctl.excluir_produto(nome=nome)
+    if not evento.get('ok'):
+        response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
     redirect('/admin/produtos')
 
 @app.route('/admin/produtos/editar', method=['POST'])
 @requer_admin
 def admin_edit_produto():
     product_data = {
-        'nome_original' : request.forms.get('nome_original'),
-        'nome'          : request.forms.get('nome'),
+        'nome_original' : request.forms.get('nome_original').encode('iso-8859-1').decode('utf-8'),
+        'nome'          : request.forms.get('nome').encode('iso-8859-1').decode('utf-8'),
         'preco'         : float(request.forms.get('preco')),
         'qtd_estoque'   : int(request.forms.get('quantidade'))
     }
-    ctl.editar_produto(product_data)
+    evento = ctl.editar_produto(product_data)
+    if not evento.get('ok'):
+        response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
     redirect('/admin/produtos')
+
 @app.route('/vitrine',method=['GET'])
 @requer_login
 def vitrine():

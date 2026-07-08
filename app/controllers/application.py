@@ -66,14 +66,15 @@ class Application():
                         total_produtos = len(self.mercado.lista_produtos)
                         )
 
-    def render_admin_produtos(self,usuario:Cliente|Administrador=None):
+    def render_admin_produtos(self,usuario:Cliente|Administrador=None,erro=None):
         logado = usuario is not None
         return template('app/views/html/admin_produtos',
                         titulo_pagina = 'Gerenciamento de Produtos',
                         logado = logado,
                         usuario_admin = isinstance(usuario, Administrador) if logado else False,
                         usuario_nome = usuario.get_nome() if logado else '',
-                        lista_produtos=[p.to_dict() for p in self.mercado.lista_produtos]
+                        lista_produtos=[p.to_dict() for p in self.mercado.lista_produtos],
+                        erro=erro
                         )
 
     def cadastrar_produto(self,data:dict[str,Any]) -> dict:

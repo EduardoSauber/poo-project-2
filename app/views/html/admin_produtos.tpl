@@ -85,3 +85,7 @@
 </dialog>
 
 <script src="/static/js/admin.js"></script>
+
+% if get('erro'):
+<script>alert("Erro:\n{{erro}}")</script>
+% end
