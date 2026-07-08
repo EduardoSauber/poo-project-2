@@ -17,7 +17,7 @@
             </button>
                 % if get('logado',False):
                     % if get('usuario_admin',False):
-                        <button class="btn-navbar" onclick="location.href='/dashboard'">
+                        <button class="btn-navbar" onclick="location.href='/admin'">
                             <div class="btn-navbar-content">
                                 <img src="static/img/settings-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
                                 Painel de Gerenciamento
