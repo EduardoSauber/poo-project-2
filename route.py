@@ -95,7 +95,7 @@ def admin_dashboard_produtos():
 @app.route('/admin/produtos/criar', method=['POST'])
 @requer_admin
 def admin_create_product():
-    product_data ={
+    product_data = {
         'nome'          : request.forms.get('nome'),
         'preco'         : float(request.forms.get('preco')),
         'qtd_estoque'   : int(request.forms.get('quantidade'))
@@ -105,8 +105,20 @@ def admin_create_product():
 
 @app.route('/admin/produtos/excluir/<nome>', method=['POST'])
 @requer_admin
-def admin_delete_product(nome):
+def admin_delete_produto(nome):
     ctl.excluir_produto(nome=nome)
+    redirect('/admin/produtos')
+
+@app.route('/admin/produtos/editar', method=['POST'])
+@requer_admin
+def admin_edit_produto():
+    product_data = {
+        'nome_original' : request.forms.get('nome_original'),
+        'nome'          : request.forms.get('nome'),
+        'preco'         : float(request.forms.get('preco')),
+        'qtd_estoque'   : int(request.forms.get('quantidade'))
+    }
+    ctl.editar_produto(product_data)
     redirect('/admin/produtos')
 #-----------------------------------------------------------------------------
 

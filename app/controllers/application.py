@@ -57,7 +57,9 @@ class Application():
                         titulo_pagina = 'Painel Administrador',
                         logado = logado,
                         usuario_admin = isinstance(usuario, Administrador) if logado else False,
-                        usuario_nome = usuario.get_nome() if logado else ''
+                        usuario_nome = usuario.get_nome() if logado else '',
+                        total_clientes = len(self.mercado.lista_clientes),
+                        total_produtos = len(self.mercado.lista_produtos)
                         )
 
     def render_admin_produtos(self,usuario:Cliente|Administrador=None):
@@ -78,10 +80,18 @@ class Application():
             self.gerenciador_persistencia.salvar_produtos(self.mercado)
         return evento
 
-    def excluir_produto(self,nome:str):
+    def excluir_produto(self,nome:str) -> dict:
         if not nome:
             return {'ok': False, 'erro': 'Nenhum dado enviado.'}
         evento = self.gerenciador_produto.excluir_produto(nome=nome,mercado=self.mercado)
+        if evento.get('ok'):
+            self.gerenciador_persistencia.salvar_produtos(self.mercado)
+        return evento
+
+    def editar_produto(self,data:dict[str,Any]) -> dict:
+        if not data:
+            return {'ok': False, 'erro': 'Nenhum dado enviado.'}
+        evento = self.gerenciador_produto.editar_produto(data=data, mercado=self.mercado)
         if evento.get('ok'):
             self.gerenciador_persistencia.salvar_produtos(self.mercado)
         return evento
