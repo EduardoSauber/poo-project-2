@@ -7,6 +7,7 @@ from app.controllers.autenticacao import GerenciadorAutenticacao
 from app.controllers.persistencia import GerenciadorPersistencia
 from app.models.administrador import Administrador
 from app.models.cliente import Cliente
+from app.controllers.loja_controllers import LojaController
 
 class Application():
 
@@ -19,6 +20,8 @@ class Application():
         self.mercado = Mercado()
         self.gerenciador_persistencia.carregar_dados(self.mercado)
         self.__seed_admin_padrao()
+
+        self.loja_controller = LojaController()
 
     def render(self,page):
        content = self.pages.get(page, self.helper())
@@ -146,4 +149,15 @@ class Application():
 
         self.gerenciador_persistencia.salvar_clientes(self.mercado)
         return {'ok': True}
+
+    def get_vitrine_page(self, usuario):
+        produtos = self.loja_controller.get_vitrine(self.mercado)
+        logado = usuario is not None
+        return template('app/views/html/vitrine',
+                        titulo_pagina='Vitrine',
+                        logado=logado,
+                        usuario_admin=isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome=usuario.get_nome() if logado else '',
+                        lista_produtos=produtos
+                        )
 

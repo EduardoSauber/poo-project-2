@@ -44,7 +44,11 @@ def login_handler(info=None):
         id_sessao = ctl.login(cpf, senha)
         if id_sessao:
             response.set_cookie('sessao', id_sessao, secret='chave-secreta')
-            return redirect('/')
+            usuario = ctl.get_usuario_logado(id_sessao)
+            if isinstance(usuario, Administrador):
+                return redirect('/dashboard')
+            else:
+                return redirect('/vitrine')
         return ctl.get_login_page(erro='CPF ou senha incorretos.')
 
     if request.method == 'GET':
@@ -101,6 +105,13 @@ def requer_admin(func):
             return redirect('/login')
         return func(*args, **kwargs)
     return wrapper
+
+@app.route('/vitrine',method=['GET'])
+@requer_login
+def vitrine():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.get_vitrine_page(usuario)
 #-----------------------------------------------------------------------------
 
 
