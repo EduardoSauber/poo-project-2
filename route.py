@@ -46,6 +46,11 @@ def login_handler(info=None):
             response.set_cookie('sessao', id_sessao, secret='chave-secreta')
             return redirect('/')
         return ctl.get_login_page(erro='CPF ou senha incorretos.')
+
+    if request.method == 'GET':
+        sucesso = request.query.get('sucesso')
+        return ctl.get_login_page(sucesso=sucesso)
+
     return ctl.get_login_page()
 
 
@@ -57,7 +62,28 @@ def logout(info=None):
     ctl.logout(id_sessao)
     response.delete_cookie('sessao')
     return redirect('/login')
+
+
+@app.route('/cadastro', method=['GET', 'POST'])
+def cadastro_handler(info=None):
+    if request.method == 'POST':
+        dados = {
+            'nome': request.forms.get('nome'),
+            'cpf': request.forms.get('cpf'),
+            'email': request.forms.get('email'),
+            'idade': request.forms.get('idade'),
+            'senha': request.forms.get('senha')
+        }
+
+        resultado = ctl.cadastrar_cliente(dados)
+        if resultado['ok']:
+            return redirect('/login?sucesso=1')
+
+        return ctl.get_cadastro_page(erro=resultado['erro'])
     
+    return ctl.get_cadastro_page()
+
+
 def requer_login(func):
     @wraps(func)
     def wrapper(*args, **kwargs):

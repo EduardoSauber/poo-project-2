@@ -38,8 +38,12 @@ class Pessoa(ABC):
     def set_senha(self,senha:str) -> bool:
         if not senha:
             return False
+        if len(senha) < 6:
+            return False
+
         self.__senha = hashlib.sha256(senha.encode('utf-8')).hexdigest()
         return True
+        
     def check_senha(self,senha:str) -> bool:
         if not senha:
             return False
