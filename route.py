@@ -91,6 +91,23 @@ def admin_dashboard_produtos():
     id_sessao = request.get_cookie('sessao', secret='chave-secreta')
     usuario = ctl.get_usuario_logado(id_sessao)
     return ctl.render_admin_produtos(usuario)
+
+@app.route('/admin/produtos/criar', method=['POST'])
+@requer_admin
+def admin_create_product():
+    product_data ={
+        'nome'          : request.forms.get('nome'),
+        'preco'         : float(request.forms.get('preco')),
+        'qtd_estoque'   : int(request.forms.get('quantidade'))
+    }
+    ctl.cadastrar_produto(data=product_data)
+    redirect('/admin/produtos')
+
+@app.route('/admin/produtos/excluir/<nome>', method=['POST'])
+@requer_admin
+def admin_delete_product(nome):
+    ctl.excluir_produto(nome=nome)
+    redirect('/admin/produtos')
 #-----------------------------------------------------------------------------
 
 
