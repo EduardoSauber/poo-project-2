@@ -91,8 +91,8 @@ class Application():
     def logout(self, id_sessao):
         return self.gerenciador_autenticacao.logout(id_sessao)
     
-    def get_login_page(self, erro=None):
-        return template('app/views/html/login', erro=erro)
+    def get_login_page(self, erro=None, sucesso=None):
+        return template('app/views/html/login', erro=erro, sucesso=sucesso)
 
     def render_home(self, usuario=None):
         from app.models.administrador import Administrador
@@ -130,7 +130,16 @@ class Application():
         if len(senha) < 6:
             return {'ok': False, 'erro': 'A senha deve ter no mínimo 6 caracteres.'}
 
-        cliente = Cliente(cpf, nome, email, int(idade), senha, db_read=False)
+        try:
+            idade = int(idade)
+        
+        except (ValueError, TypeError):
+            return {'ok': False, 'erro': 'Idade inválida.'}
+
+        if idade < 0 or idade > 100:
+            return {'ok': False, 'erro': 'Idade inválida.'}
+
+        cliente = Cliente(cpf, nome, email, idade, senha, db_read=False)
 
         if not self.mercado.cadastrar_cliente(cliente):
             return {'ok': False, 'erro': 'CPF já cadastrado.'}
