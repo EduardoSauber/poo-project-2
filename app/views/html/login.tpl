@@ -15,5 +15,6 @@
         <label for="senha">Senha</label>
         <input type="password" id="senha" name="senha">
         <button type="submit">Login</button>
+        <a href="/cadastro">Não tem conta? Cadastre-se</a>
     </form>
 </div>
