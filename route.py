@@ -57,7 +57,28 @@ def logout(info=None):
     ctl.logout(id_sessao)
     response.delete_cookie('sessao')
     return redirect('/login')
-    
+
+
+@app.route('/cadastro', method=['GET', 'POST'])
+def cadastro_handler(info=None):
+    if request.method == 'POST':
+        dados = {
+            'nome': request.forms.get('nome'),
+            'cpf': request.forms.get('cpf'),
+            'email': request.forms.get('email'),
+            'idade': request.forms.get('idade'),
+            'senha': request.forms.get('senha')
+        }
+
+        resultado = ctl.cadastrar_cliente(dados)
+        if resultado['ok']:
+            return redirect('/login?sucesso=1')
+
+        return ctl.get_cadastro_page(erro=resultado['erro'])
+
+    return ctl.get_cadastro_page()
+
+
 def requer_login(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
