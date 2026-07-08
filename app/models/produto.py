@@ -2,8 +2,7 @@ from typing import Any
 
 
 class Produto:
-    def __init__(self,id_produto,nome,preco,qtd_estoque):
-        self.id = id_produto
+    def __init__(self,nome,preco,qtd_estoque):
         self.nome = nome
         self.__preco = preco
         self.__qtd_estoque = qtd_estoque
@@ -32,7 +31,6 @@ class Produto:
 
     def to_dict(self) -> dict[str,Any]:
         return {
-            "id"            : self.id,
             "nome"          : self.nome,
             "preco"         : self.get_preco(),
             "qtd_estoque"   : self.get_estoque()
