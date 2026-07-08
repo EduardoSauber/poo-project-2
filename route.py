@@ -2,6 +2,8 @@ from app.controllers.application import Application
 from bottle import Bottle, route, run, request, static_file
 from bottle import redirect, template, response
 
+from functools import wraps
+from app.models.administrador import Administrador
 
 app = Bottle()
 ctl = Application()
@@ -25,11 +27,54 @@ def error404(error):
 #-----------------------------------------------------------------------------
 # Suas rotas aqui:
 
-@app.route('/', methods=['GET'])
+@app.route('/', method=['GET'])
 def home(info=None):
-    return ctl.render('home')
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    if not usuario:
+        return redirect('/login')
+    return ctl.render_home(usuario)
 
 
+@app.route('/login', method=['GET', 'POST'])
+def login_handler(info=None):
+    if request.method == 'POST':
+        cpf   = request.forms.get('cpf')
+        senha = request.forms.get('senha')
+        id_sessao = ctl.login(cpf, senha)
+        if id_sessao:
+            response.set_cookie('sessao', id_sessao, secret='chave-secreta')
+            return redirect('/')
+        return ctl.get_login_page(erro='CPF ou senha incorretos.')
+    return ctl.get_login_page()
+
+
+
+@app.route('/logout', method=['GET'])
+def logout(info=None):
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+
+    ctl.logout(id_sessao)
+    response.delete_cookie('sessao')
+    return redirect('/login')
+    
+def requer_login(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+        if not ctl.get_usuario_logado(id_sessao):
+            return redirect('/login')
+        return func(*args, **kwargs)
+    return wrapper
+def requer_admin(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+        usuario = ctl.get_usuario_logado(id_sessao)
+        if not usuario or not isinstance(usuario, Administrador):
+            return redirect('/login')
+        return func(*args, **kwargs)
+    return wrapper
 #-----------------------------------------------------------------------------
 
 

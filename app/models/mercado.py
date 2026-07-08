@@ -5,7 +5,7 @@ from app.models.recibo import Recibo
 
 
 class Mercado:
-    def __init__(self, lista_produtos, lista_clientes, lista_administradores):
+    def __init__(self, lista_produtos = None, lista_clientes = None, lista_administradores = None):
 
         self.lista_produtos = lista_produtos if lista_produtos else []
         self.lista_clientes = lista_clientes if lista_clientes else []

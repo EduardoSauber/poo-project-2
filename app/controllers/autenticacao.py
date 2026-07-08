@@ -34,4 +34,4 @@ class GerenciadorAutenticacao:
     def get_usuario_por_id_sessao(self, id_sessao:str) -> Cliente|Administrador|None:
         if not id_sessao:
             return None
-        return self.__usuarios_autenticados[id_sessao]
+        return self.__usuarios_autenticados.get(id_sessao)
