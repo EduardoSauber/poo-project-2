@@ -6,11 +6,15 @@
         % if get('erro', None):
             <p class="erro">{{ get('erro', '') }}</p>
         %end
+        % if get('sucesso', None):
+            <p class="sucesso">Cadastro realizado! Faça login.</p>
+        %end
 
         <label for="cpf">CPF</label>
         <input type="text" id="cpf" name="cpf">
         <label for="senha">Senha</label>
         <input type="password" id="senha" name="senha">
         <button type="submit">Login</button>
+        <a href="/cadastro">Não tem conta? Cadastre-se</a>
     </form>
 </div>

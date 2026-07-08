@@ -44,8 +44,17 @@ def login_handler(info=None):
         id_sessao = ctl.login(cpf, senha)
         if id_sessao:
             response.set_cookie('sessao', id_sessao, secret='chave-secreta')
-            return redirect('/')
+            usuario = ctl.get_usuario_logado(id_sessao)
+            if isinstance(usuario, Administrador):
+                return redirect('/dashboard')
+            else:
+                return redirect('/vitrine')
         return ctl.get_login_page(erro='CPF ou senha incorretos.')
+
+    if request.method == 'GET':
+        sucesso = request.query.get('sucesso')
+        return ctl.get_login_page(sucesso=sucesso)
+
     return ctl.get_login_page()
 
 
@@ -57,7 +66,28 @@ def logout(info=None):
     ctl.logout(id_sessao)
     response.delete_cookie('sessao')
     return redirect('/login')
+
+
+@app.route('/cadastro', method=['GET', 'POST'])
+def cadastro_handler(info=None):
+    if request.method == 'POST':
+        dados = {
+            'nome': request.forms.get('nome'),
+            'cpf': request.forms.get('cpf'),
+            'email': request.forms.get('email'),
+            'idade': request.forms.get('idade'),
+            'senha': request.forms.get('senha')
+        }
+
+        resultado = ctl.cadastrar_cliente(dados)
+        if resultado['ok']:
+            return redirect('/login?sucesso=1')
+
+        return ctl.get_cadastro_page(erro=resultado['erro'])
     
+    return ctl.get_cadastro_page()
+
+
 def requer_login(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -120,6 +150,12 @@ def admin_edit_produto():
     }
     ctl.editar_produto(product_data)
     redirect('/admin/produtos')
+@app.route('/vitrine',method=['GET'])
+@requer_login
+def vitrine():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.get_vitrine_page(usuario)
 #-----------------------------------------------------------------------------
 
 
