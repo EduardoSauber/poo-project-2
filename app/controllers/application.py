@@ -2,10 +2,15 @@ from typing import Any
 
 from bottle import template
 
+from app.models import produto
+from app.models.cliente import Cliente
 from app.models.mercado import Mercado
 from app.controllers.autenticacao import GerenciadorAutenticacao
 from app.controllers.persistencia import GerenciadorPersistencia
+from app.controllers.produto_controller import GerenciadorProduto
 from app.models.administrador import Administrador
+from app.models.produto import Produto
+
 from app.models.cliente import Cliente
 from app.controllers.loja_controllers import LojaController
 
@@ -13,10 +18,10 @@ class Application():
 
     def __init__(self):
         self.pages = {
-            'home'  : self.home()
         }
         self.gerenciador_autenticacao = GerenciadorAutenticacao()
         self.gerenciador_persistencia = GerenciadorPersistencia()
+        self.gerenciador_produto = GerenciadorProduto()
         self.mercado = Mercado()
         self.gerenciador_persistencia.carregar_dados(self.mercado)
         self.__seed_admin_padrao()
@@ -30,64 +35,6 @@ class Application():
     def helper(self):
         return template('app/views/html/helper')
 
-    def home(self):
-        lista_produtos = [
-            {'nome': 'PLACEHOLDER','preco':'12,34'},
-            {'nome': 'PLACEHOLDER','preco':'12,34'},
-            {'nome': 'PLACEHOLDER','preco':'12,34'},
-            {'nome': 'PLACEHOLDER','preco':'12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'},
-            {'nome': 'PLACEHOLDER', 'preco': '12,34'}
-        ]
-        return template('app/views/html/home',
-                        titulo_pagina='Pagina Inicial',
-                        logado = False,
-                        usuario_admin = False,
-                        usuario_nome='PLACEHOLDER',
-                        lista_produtos=lista_produtos
-                        )
     def login(self, cpf, senha):
         return self.gerenciador_autenticacao.autenticar(self.mercado, cpf, senha)
 
@@ -107,6 +54,51 @@ class Application():
                         usuario_nome=usuario.get_nome() if logado else '',
                         lista_produtos=[p.to_dict() for p in self.mercado.lista_produtos]
                         )
+
+    def render_admin_dashboard(self,usuario:Cliente|Administrador=None):
+        logado = usuario is not None
+        return template('app/views/html/admin_dashboard',
+                        titulo_pagina = 'Painel Administrador',
+                        logado = logado,
+                        usuario_admin = isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome = usuario.get_nome() if logado else '',
+                        total_clientes = len(self.mercado.lista_clientes),
+                        total_produtos = len(self.mercado.lista_produtos)
+                        )
+
+    def render_admin_produtos(self,usuario:Cliente|Administrador=None):
+        logado = usuario is not None
+        return template('app/views/html/admin_produtos',
+                        titulo_pagina = 'Gerenciamento de Produtos',
+                        logado = logado,
+                        usuario_admin = isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome = usuario.get_nome() if logado else '',
+                        lista_produtos=[p.to_dict() for p in self.mercado.lista_produtos]
+                        )
+
+    def cadastrar_produto(self,data:dict[str,Any]) -> dict:
+        if not data:
+            return {'ok' : False, 'erro' : 'Nenhum dado enviado.'}
+        evento = self.gerenciador_produto.criar_produto(data=data,mercado=self.mercado)
+        if evento.get('ok'):
+            self.gerenciador_persistencia.salvar_produtos(self.mercado)
+        return evento
+
+    def excluir_produto(self,nome:str) -> dict:
+        if not nome:
+            return {'ok': False, 'erro': 'Nenhum dado enviado.'}
+        evento = self.gerenciador_produto.excluir_produto(nome=nome,mercado=self.mercado)
+        if evento.get('ok'):
+            self.gerenciador_persistencia.salvar_produtos(self.mercado)
+        return evento
+
+    def editar_produto(self,data:dict[str,Any]) -> dict:
+        if not data:
+            return {'ok': False, 'erro': 'Nenhum dado enviado.'}
+        evento = self.gerenciador_produto.editar_produto(data=data, mercado=self.mercado)
+        if evento.get('ok'):
+            self.gerenciador_persistencia.salvar_produtos(self.mercado)
+        return evento
 
     def __seed_admin_padrao(self):
         if not self.mercado.lista_administradores:

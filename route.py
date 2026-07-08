@@ -106,6 +106,50 @@ def requer_admin(func):
         return func(*args, **kwargs)
     return wrapper
 
+
+@app.route('/admin', method=['GET'])
+@requer_admin
+def admin_dashboard():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.render_admin_dashboard(usuario)
+
+
+@app.route('/admin/produtos', method=['GET'])
+@requer_admin
+def admin_dashboard_produtos():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.render_admin_produtos(usuario)
+
+@app.route('/admin/produtos/criar', method=['POST'])
+@requer_admin
+def admin_create_product():
+    product_data = {
+        'nome'          : request.forms.get('nome'),
+        'preco'         : float(request.forms.get('preco')),
+        'qtd_estoque'   : int(request.forms.get('quantidade'))
+    }
+    ctl.cadastrar_produto(data=product_data)
+    redirect('/admin/produtos')
+
+@app.route('/admin/produtos/excluir/<nome>', method=['POST'])
+@requer_admin
+def admin_delete_produto(nome):
+    ctl.excluir_produto(nome=nome)
+    redirect('/admin/produtos')
+
+@app.route('/admin/produtos/editar', method=['POST'])
+@requer_admin
+def admin_edit_produto():
+    product_data = {
+        'nome_original' : request.forms.get('nome_original'),
+        'nome'          : request.forms.get('nome'),
+        'preco'         : float(request.forms.get('preco')),
+        'qtd_estoque'   : int(request.forms.get('quantidade'))
+    }
+    ctl.editar_produto(product_data)
+    redirect('/admin/produtos')
 @app.route('/vitrine',method=['GET'])
 @requer_login
 def vitrine():
@@ -117,4 +161,4 @@ def vitrine():
 
 if __name__ == '__main__':
 
-    run(app, host='0.0.0.0', port=8080, debug=True)
+    run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)

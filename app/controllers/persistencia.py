@@ -47,7 +47,6 @@ class GerenciadorPersistencia:
                 dados = json.load(ARQUIVO)
                 for p_dict in dados:
                     novo_produto = Produto(
-                        id_produto  = p_dict['id'],
                         nome        = p_dict['nome'],
                         preco       = p_dict['preco'],
                         qtd_estoque = p_dict['qtd_estoque']
