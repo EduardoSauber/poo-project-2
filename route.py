@@ -81,8 +81,16 @@ def requer_admin(func):
 @requer_admin
 def admin_dashboard():
     id_sessao = request.get_cookie('sessao', secret='chave-secreta')
-    usuario = ctl.get_usuario_logado(id_sessao) # requer_admin poderia retornar o usuário
+    usuario = ctl.get_usuario_logado(id_sessao)
     return ctl.render_admin_dashboard(usuario)
+
+
+@app.route('/admin/produtos', method=['GET'])
+@requer_admin
+def admin_dashboard_produtos():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.render_admin_produtos(usuario)
 #-----------------------------------------------------------------------------
 
 

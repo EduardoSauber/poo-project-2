@@ -52,7 +52,17 @@ class Application():
                         titulo_pagina = 'Painel Administrador',
                         logado = logado,
                         usuario_admin = isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome = usuario.get_nome() if logado else ''
+                        )
+
+    def render_admin_produtos(self,usuario:Cliente|Administrador=None):
+        logado = usuario is not None
+        return template('app/views/html/admin_produtos',
+                        titulo_pagina = 'Gerenciamento de Produtos',
+                        logado = logado,
+                        usuario_admin = isinstance(usuario, Administrador) if logado else False,
                         usuario_nome = usuario.get_nome() if logado else '',
+                        lista_produtos=[p.to_dict() for p in self.mercado.lista_produtos]
                         )
 
     def __seed_admin_padrao(self):
