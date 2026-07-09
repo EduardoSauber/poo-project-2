@@ -143,7 +143,7 @@ class Application():
         self.gerenciador_persistencia.salvar_clientes(self.mercado)
         return {'ok': True}
 
-    def get_vitrine_page(self, usuario):
+    def get_vitrine_page(self, usuario, sucesso=None, erro=None):
         produtos = self.loja_controller.get_vitrine(self.mercado)
         logado = usuario is not None
         return template('app/views/html/vitrine',
@@ -151,6 +151,109 @@ class Application():
                         logado=logado,
                         usuario_admin=isinstance(usuario, Administrador) if logado else False,
                         usuario_nome=usuario.get_nome() if logado else '',
-                        lista_produtos=produtos
+                        lista_produtos=produtos,
+                        sucesso=sucesso,
+                        erro=erro
                         )
 
+    def adicionar_ao_carrinho(self, usuario, produto_nome: str, quantidade: int) -> dict:
+        produto = next((p for p in self.mercado.lista_produtos if p.nome == produto_nome), None)
+
+        if not produto:
+            return {'ok': False, 'erro': 'Produto nao encontrado'}
+
+        item_no_carrinho = usuario.carrinho.get_produto_quantidade(produto)
+        quantidade_no_carrinho = item_no_carrinho['quantidade'] if item_no_carrinho else 0
+        quantidade_total_desejada = quantidade_no_carrinho + quantidade
+
+        if quantidade_total_desejada > produto.get_estoque():
+            return {'ok': False, 'erro': f'Atenção! Você já tem {quantidade_no_carrinho} deste produto no carrinho. O estoque limite é de {produto.get_estoque()}.'}
+
+        usuario.carrinho.adicionar_ao_carrinho(produto, quantidade)
+        return {'ok': True}
+
+    def get_carrinho_page(self, usuario):
+        logado = usuario is not None
+
+        itens = []
+
+        for item in usuario.carrinho.lista_items:
+            itens.append({
+                'produto' : item['produto'].to_dict(),
+                'quantidade' : item['quantidade'],
+                'subtotal': round(item['produto'].get_preco() * item['quantidade'], 2)
+            })
+
+        return template('app/views/html/carrinho',
+                    titulo_pagina='Meu Carrinho',
+                    logado=logado,
+                    usuario_admin=isinstance(usuario, Administrador) if logado else False,
+                    usuario_nome=usuario.get_nome() if logado else '',
+                    itens=itens,
+                    total=usuario.carrinho.total
+                    )
+
+    def remover_do_carrinho(self, usuario, produto_nome: str, quantidade: int = None) -> dict:
+        produto = next((p for p in self.mercado.lista_produtos if p.nome == produto_nome), None)
+
+        if not produto:
+            return {'ok': False, 'erro': 'Produto nao encontrado'}
+
+        item_no_carrinho = usuario.carrinho.get_produto_quantidade(produto)
+        if item_no_carrinho:
+            qtd_remover = quantidade if quantidade is not None else item_no_carrinho['quantidade']
+            usuario.carrinho.remover_do_carrinho(produto, qtd_remover)
+            return {'ok': True}
+        
+        return {'ok': False, 'erro': 'Produto não está no carrinho.'}
+
+    def get_recibo_page(self, usuario, recibo_dict):
+        logado = usuario is not None
+        return template('app/views/html/recibo',
+                        titulo_pagina='Recibo da Compra',
+                        logado=logado,
+                        usuario_admin=False,
+                        usuario_nome=usuario.get_nome() if logado else '',
+                        recibo=recibo_dict
+                        )
+
+        
+
+    def get_checkout_page(self, usuario):
+        if not usuario.carrinho.lista_items: 
+            return None
+
+        logado = usuario is not None
+        
+        itens = []
+        for item in usuario.carrinho.lista_items:
+            itens.append({
+                'produto': item['produto'].to_dict(),
+                'quantidade': item['quantidade'],
+                'subtotal': round(item['produto'].get_preco() * item['quantidade'], 2)
+            })
+        
+        return template('app/views/html/checkout',
+                    titulo_pagina='Checkout',
+                    logado=logado,
+                    usuario_admin=False,
+                    usuario_nome=usuario.get_nome() if logado else '',
+                    itens=itens,
+                    total=usuario.carrinho.total
+                    )
+
+    def confirmar_compra(self, usuario) -> dict:
+        if not usuario.carrinho.lista_items:
+            return {'ok': False, 'erro': 'Carrinho vazio'}
+        
+        for item in usuario.carrinho.lista_items:
+            item['produto'].descontar_estoque(item['quantidade'])
+            
+        recibo = self.mercado.emitir_recibo(usuario)
+
+        usuario.carrinho.limpar_carrinho()
+
+        self.gerenciador_persistencia.salvar_produtos(self.mercado)
+        self.gerenciador_persistencia.salvar_clientes(self.mercado)
+
+        return {'ok': True, 'recibo': recibo.to_dict()}

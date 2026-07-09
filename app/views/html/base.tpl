@@ -24,7 +24,7 @@
                             </div>
                         </button>
                     % else:
-                        <button class="btn-navbar" onclick="location.href='/cart'">
+                        <button class="btn-navbar" onclick="location.href='/carrinho'">
                             <div class="btn-navbar-content">
                                 <img src="/static/img/cart-icon.svg" style="width: 24px; height: 24px; object-fit: contain;" alt="" aria-hidden="true"></img>
                                 Meu Carrinho

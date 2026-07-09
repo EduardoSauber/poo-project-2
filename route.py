@@ -33,7 +33,11 @@ def home(info=None):
     usuario = ctl.get_usuario_logado(id_sessao)
     if not usuario:
         return redirect('/login')
-    return ctl.render_home(usuario)
+    
+    if isinstance(usuario, Administrador):
+        return redirect('/admin')
+    else:
+        return redirect('/vitrine')
 
 
 @app.route('/login', method=['GET', 'POST'])
@@ -166,7 +170,80 @@ def admin_edit_produto():
 def vitrine():
     id_sessao = request.get_cookie('sessao', secret='chave-secreta')
     usuario = ctl.get_usuario_logado(id_sessao)
-    return ctl.get_vitrine_page(usuario)
+    sucesso = request.get_cookie('notif-sucesso', secret='erro_secreto')
+    erro = request.get_cookie('notif-erro', secret='erro_secreto')
+    if sucesso:
+        response.delete_cookie('notif-sucesso', path='/')
+    if erro:
+        response.delete_cookie('notif-erro', path='/')
+    return ctl.get_vitrine_page(usuario, sucesso=sucesso, erro=erro)
+
+@app.route('/carrinho/adicionar',method=['POST'])
+@requer_login
+def carrinho_adicionar():
+    id_sessao = request.get_cookie('sessao',secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    produto_nome = request.forms.get('produto_nome')
+    if produto_nome:
+        produto_nome = produto_nome.encode('iso-8859-1').decode('utf-8')
+    quantidade = int(request.forms.get('quantidade',1))
+    resultado = ctl.adicionar_ao_carrinho(usuario, produto_nome, quantidade)
+
+    if resultado['ok']:
+        response.set_cookie('notif-sucesso', 'Produto adicionado ao carrinho!', secret='erro_secreto', path='/')
+    else:
+        response.set_cookie('notif-erro', resultado['erro'], secret='erro_secreto', path='/')
+
+    return redirect('/vitrine')
+
+@app.route('/carrinho', method=['GET'])
+@requer_login
+def carrinho_ver():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    
+    return ctl.get_carrinho_page(usuario)
+
+@app.route('/carrinho/remover', method=['POST'])
+@requer_login
+def carrinho_remover():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    produto_nome = request.forms.get('produto_nome')
+    if produto_nome:
+        produto_nome = produto_nome.encode('iso-8859-1').decode('utf-8')
+    
+    quantidade = request.forms.get('quantidade')
+    if quantidade:
+        quantidade = int(quantidade)
+    else:
+        quantidade = None
+
+    ctl.remover_do_carrinho(usuario, produto_nome, quantidade)
+    return redirect('/carrinho')
+
+@app.route('/checkout', method=['GET'])
+@requer_login
+def checkout_ver():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    pagina = ctl.get_checkout_page(usuario)
+    if pagina is None:
+        return redirect('/carrinho')
+    return pagina
+
+@app.route('/checkout/confirmar', method=['POST'])
+@requer_login
+def checkout_confirmar():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    resultado = ctl.confirmar_compra(usuario)
+    if resultado['ok']:
+        return ctl.get_recibo_page(usuario, resultado['recibo'])
+    else:
+        return redirect('/checkout')
+
+    
 #-----------------------------------------------------------------------------
 
 

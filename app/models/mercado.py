@@ -21,17 +21,16 @@ class Mercado:
         self.lista_produtos.append(produto)
         return True
 
-    def emitir_recibo(self, cliente:Cliente):
-        """
-        pegar Cliente
-        criar Recibo
-        Recibo.set_id()
-        Recibo.set_data()
-        Recibo.set_cliente(cliente_nome=Cliente.get_nome(),cliente_cpf=Cliente.get_cpf()
-        Recibo.adicionar_itens(Cliente.carrinho.lista_items)
-        Recibo.set_total(Cliente.carrinho.total)
-        """
-        pass
+    def emitir_recibo(self, cliente: Cliente):
+        recibo = Recibo()
+        recibo.set_id()
+        recibo.set_data()
+        recibo.set_cliente(cliente_nome=cliente.get_nome(), cliente_cpf=cliente.get_cpf())
+        for item in cliente.carrinho.lista_items:
+            recibo.adicionar_itens(item)
+        recibo.set_total(cliente.carrinho.total)
+        return recibo
+
 
     # === USUARIOS ===
     def cadastrar_cliente(self, cliente: Cliente) -> bool:

@@ -1,0 +1,57 @@
+.carrinho-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+.carrinho-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.carrinho-table th, .carrinho-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.carrinho-table th {
+    background-color: #f4f4f4;
+}
+
+.acoes-form {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.btn-remove {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.btn-remove.qtd {
+    background-color: #ffa500;
+}
+
+.btn-checkout {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.recibo-card {
+    border: 1px dashed #333;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
