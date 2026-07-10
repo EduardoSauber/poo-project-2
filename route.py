@@ -200,6 +200,20 @@ def admin_delete_cliente(cpf):
         response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
     redirect('/admin/clientes')
 
+@app.route('/admin/vendas', method=['GET'])
+@requer_admin
+def admin_dashboard_vendas():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.render_admin_vendas(usuario)
+
+@app.route('/admin/vendas/<id>', method=['GET'])
+@requer_admin
+def admin_dashboard_ver_recibo(id):
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+    return ctl.render_admin_recibo(usuario=usuario,recibo_id=id)
+
 @app.route('/vitrine',method=['GET'])
 @requer_login
 def vitrine():

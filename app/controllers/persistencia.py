@@ -2,6 +2,7 @@ import json
 import os
 from app.models.mercado import Mercado
 from app.models.produto import Produto
+from app.models.recibo import Recibo
 from app.models.cliente import Cliente
 from app.models.administrador import Administrador
 from app.controllers.autenticacao import GerenciadorAutenticacao
@@ -20,6 +21,12 @@ class GerenciadorPersistencia:
         for produtos in mercado.lista_produtos:
             produtos_dict.append(produtos.to_dict())
         self.salvar_dados(produtos_dict,"produtos")
+
+    def salvar_vendas(self,mercado:Mercado):
+        vendas_dict = []
+        for recibo in mercado.lista_vendas:
+            vendas_dict.append(recibo.to_dict())
+        self.salvar_dados(vendas_dict,"vendas")
 
     def salvar_clientes(self,mercado:Mercado):
         clientes_dict = []
@@ -105,6 +112,31 @@ class GerenciadorPersistencia:
                         db_read = True
                     )
                     mercado.cadastrar_administrador(administrador=novo_admin)
+        except FileNotFoundError:
+            print(f"\n(PERSISTENCIA - CARREGAR) Banco de dados não encontrado.")
+        except json.JSONDecodeError:
+            print(f"\n(PERSISTENCIA - CARREGAR) Arquivo de dados corrompido.")
+        except Exception as e:
+            print(f"\n(PERSISTENCIA - CARREGAR) Erro ao carregar dados: {e}")
+
+        try:
+            with open(f"{self.caminho}/vendas.json","r",encoding="utf-8") as ARQUIVO_4:
+                dados = json.load(ARQUIVO_4)
+                for v_dict in dados:
+                    novo_recibo = Recibo()
+                    novo_recibo.set_id(v_dict['id'])
+                    novo_recibo.set_data(v_dict['data'])
+                    novo_recibo.set_cliente(v_dict['cliente']['nome'],v_dict['cliente']['cpf'])
+                    v_produtos = v_dict['itens']
+                    for vp_dict in v_produtos:
+                        v_produto = Produto(
+                        nome        = vp_dict['produto'].get('nome',''),
+                        preco       = vp_dict['produto'].get('preco',0.0),
+                        qtd_estoque = vp_dict['produto'].get('qtd_estoque',0)
+                        )
+                        novo_recibo.adicionar_itens({'produto':v_produto,'quantidade':vp_dict['quantidade']})
+                    novo_recibo.set_total(v_dict.get('total',0.0))
+                    mercado.lista_vendas.append(novo_recibo)
         except FileNotFoundError:
             print(f"\n(PERSISTENCIA - CARREGAR) Banco de dados não encontrado.")
         except json.JSONDecodeError:

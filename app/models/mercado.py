@@ -5,9 +5,10 @@ from app.models.recibo import Recibo
 
 
 class Mercado:
-    def __init__(self, lista_produtos = None, lista_clientes = None, lista_administradores = None):
+    def __init__(self, lista_produtos = None, lista_clientes = None, lista_administradores = None, lista_vendas = None):
 
         self.lista_produtos = lista_produtos if lista_produtos else []
+        self.lista_vendas = lista_vendas if lista_vendas else []
         self.lista_clientes = lista_clientes if lista_clientes else []
         self.lista_administradores = lista_administradores if lista_administradores else []
 
@@ -29,6 +30,7 @@ class Mercado:
         for item in cliente.carrinho.lista_items:
             recibo.adicionar_itens(item)
         recibo.set_total(cliente.carrinho.total)
+        self.lista_vendas.append(recibo)
         return recibo
 
 
