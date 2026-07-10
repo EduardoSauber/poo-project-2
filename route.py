@@ -165,6 +165,41 @@ def admin_edit_produto():
         response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
     redirect('/admin/produtos')
 
+@app.route('/admin/clientes', method=['GET'])
+@requer_admin
+def admin_dashboard_clientes():
+    id_sessao = request.get_cookie('sessao', secret='chave-secreta')
+    usuario = ctl.get_usuario_logado(id_sessao)
+
+    erro = request.get_cookie('notif-erro', secret='erro_secreto')
+    if erro:
+        response.delete_cookie('notif-erro', path='/')
+    return ctl.get_admin_clientes_page(usuario, erro)
+
+@app.route('/admin/clientes/editar', method=['POST'])
+@requer_admin
+def admin_edit_cliente():
+    cliente_data = {
+        'cpf_original'  : request.forms.get('cpf_original','').encode('iso-8859-1').decode('utf-8'),
+        'nome'          : request.forms.get('nome','').encode('iso-8859-1').decode('utf-8'),
+        'cpf'           : request.forms.get('cpf','').encode('iso-8859-1').decode('utf-8'),
+        'email'         : request.forms.get('email').encode('iso-8859-1').decode('utf-8'),
+        'idade'         : request.forms.get('idade','').encode('iso-8859-1').decode('utf-8'),
+        'senha'         : request.forms.get('senha','').encode('iso-8859-1').decode('utf-8')
+    }
+    evento = ctl.editar_cliente(cliente_data)
+    if not evento.get('ok'):
+        response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
+    redirect('/admin/clientes')
+
+@app.route('/admin/clientes/excluir/<cpf>', method=['POST'])
+@requer_admin
+def admin_delete_cliente(cpf):
+    evento = ctl.excluir_cliente(cpf=cpf)
+    if not evento.get('ok'):
+        response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
+    redirect('/admin/clientes')
+
 @app.route('/vitrine',method=['GET'])
 @requer_login
 def vitrine():
