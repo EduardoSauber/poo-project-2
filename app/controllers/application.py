@@ -131,7 +131,7 @@ class Application():
             return {'ok': False, 'erro': 'CPF do cliente não pode ser vazio.'}
 
         nome = data.get('nome',"").strip()
-        cpf = data.get('cpf',"").strip()
+        cpf = data.get('cpf',"").strip().replace("-","").replace(".","")
         email = data.get('email',"").strip()
         idade = data.get('idade',"")
         senha = data.get('senha',"")
@@ -141,6 +141,8 @@ class Application():
         if senha and len(senha) < 6:
             return {'ok': False, 'erro': 'A senha deve ter no mínimo 6 caracteres.'}
         if cpf != cpf_original:
+            if not cpf.isnumeric():
+                return {'ok': False, 'erro': 'CPF deve conter apenas números.'}
             if self.gerenciador_autenticacao.get_usuario_por_cpf(cpf=str(cpf),mercado=self.mercado):
                 return {'ok': False, 'erro': 'CPF já cadastrado.'}
 
@@ -197,13 +199,16 @@ class Application():
         
     def cadastrar_cliente(self, dados: dict) -> dict:
         nome = dados.get('nome')
-        cpf = dados.get('cpf')
+        cpf = dados.get('cpf','').strip().replace("-","").replace(".","")
         email = dados.get('email')
         idade = dados.get('idade')
         senha = dados.get('senha')
 
         if not nome or not cpf or not email or not idade or not senha:
             return {'ok': False, 'erro': 'Preencha todos os campos.'}
+
+        if not cpf.isnumeric():
+            return {'ok': False, 'erro': 'CPF deve conter apenas números.'}
 
         if len(senha) < 6:
             return {'ok': False, 'erro': 'A senha deve ter no mínimo 6 caracteres.'}
