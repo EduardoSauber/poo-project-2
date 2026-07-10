@@ -101,6 +101,90 @@ class Application():
             self.gerenciador_persistencia.salvar_produtos(self.mercado)
         return evento
 
+    def get_admin_clientes_page(self,usuario:Cliente|Administrador=None,erro=None):
+        logado = usuario is not None
+        return template('app/views/html/admin_clientes',
+                        titulo_pagina = 'Gerenciamento de Clientes',
+                        logado = logado,
+                        usuario_admin = isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome = usuario.get_nome() if logado else '',
+                        lista_clientes=[c.to_dict(publico=True) for c in self.mercado.lista_clientes],
+                        erro=erro
+                        )
+
+    def excluir_cliente(self,cpf:str) -> dict:
+        if not str(cpf):
+            return {'ok': False, 'erro': 'Nenhum dado enviado.'}
+        for cliente in self.mercado.lista_clientes:
+            if cliente.get_cpf() == str(cpf):
+                self.mercado.lista_clientes.remove(cliente)
+                self.gerenciador_persistencia.salvar_clientes(self.mercado)
+                return {'ok': True}
+        return {'ok': False, 'erro': 'Cliente não encontrado.'}
+
+    def editar_cliente(self,data:dict[str,Any]) -> dict:
+        if not data:
+            return {'ok': False, 'erro': 'Nenhum dado enviado.'}
+
+        cpf_original = str(data.get('cpf_original'))
+        if not cpf_original:
+            return {'ok': False, 'erro': 'CPF do cliente não pode ser vazio.'}
+
+        nome = data.get('nome',"").strip()
+        cpf = data.get('cpf',"").strip().replace("-","").replace(".","")
+        email = data.get('email',"").strip()
+        idade = data.get('idade',"")
+        senha = data.get('senha',"")
+
+        if not nome or not cpf or not email or not idade:
+            return {'ok': False, 'erro': 'Preencha todos os campos.'}
+        if senha and len(senha) < 6:
+            return {'ok': False, 'erro': 'A senha deve ter no mínimo 6 caracteres.'}
+        if cpf != cpf_original:
+            if not cpf.isnumeric():
+                return {'ok': False, 'erro': 'CPF deve conter apenas números.'}
+            if self.gerenciador_autenticacao.get_usuario_por_cpf(cpf=str(cpf),mercado=self.mercado):
+                return {'ok': False, 'erro': 'CPF já cadastrado.'}
+
+        try:
+            idade = int(idade)
+        except (ValueError, TypeError):
+            return {'ok': False, 'erro': 'Idade inválida.'}
+
+        if idade < 0 or idade > 100:
+            return {'ok': False, 'erro': 'Idade inválida.'}
+
+        alteracoes = 0
+        cliente_encontrado = False
+        for cliente in self.mercado.lista_clientes:
+            if cliente.get_cpf() == cpf_original:
+                cliente_encontrado = True
+                if nome != cliente.get_nome():
+                    cliente.set_nome(nome)
+                    alteracoes += 1
+                if cpf != cliente.get_cpf() :
+                    cliente.set_cpf(cpf)
+                    alteracoes += 1
+                if email != cliente.email:
+                    cliente.email = email
+                    alteracoes += 1
+                if idade != cliente.idade:
+                    cliente.idade = idade
+                    alteracoes += 1
+                if senha != '' and not cliente.check_senha(senha):
+                    cliente.set_senha(senha)
+                    alteracoes += 1
+                break
+        if not cliente_encontrado:
+            return {'ok': False, 'erro': 'Cliente não encontrado no sistema.'}
+
+        if alteracoes > 0:
+            self.gerenciador_persistencia.salvar_clientes(self.mercado)
+            return {'ok': True}
+
+        return {'ok': False, 'erro': 'Nenhuma alteração feita.'}
+
+
     def __seed_admin_padrao(self):
         if not self.mercado.lista_administradores:
             admin = Administrador('12345678901', 'Admin Padrao', 'admin@teste.com', 20, '123456', False)
@@ -115,13 +199,16 @@ class Application():
         
     def cadastrar_cliente(self, dados: dict) -> dict:
         nome = dados.get('nome')
-        cpf = dados.get('cpf')
+        cpf = dados.get('cpf','').strip().replace("-","").replace(".","")
         email = dados.get('email')
         idade = dados.get('idade')
         senha = dados.get('senha')
 
         if not nome or not cpf or not email or not idade or not senha:
             return {'ok': False, 'erro': 'Preencha todos os campos.'}
+
+        if not cpf.isnumeric():
+            return {'ok': False, 'erro': 'CPF deve conter apenas números.'}
 
         if len(senha) < 6:
             return {'ok': False, 'erro': 'A senha deve ter no mínimo 6 caracteres.'}
