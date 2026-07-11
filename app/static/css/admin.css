@@ -1,129 +1,140 @@
-/* admin.css */
+/* admin.css - Estilos específicos do painel de administração */
 
-.dashboard{
+.dashboard {
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
     justify-content: center;
     gap: 20px;
-    padding: 20px;
+    margin-bottom: 40px;
+    width: 100%;
 }
 
-.dash-btn{
+.dash-btn {
     flex: 1;
-    background-color: #dddddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 100%;
+    min-width: 250px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px;
-    transition: transform 0.2s;
-}
-.dash-btn:hover{
-    transform: scale(1.05);
-}
-.dash-btn-titulo { 
-    font-size: 24px; 
-    font-weight: bold; 
-}
-
-.lista-produtos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 200px);
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-}
-.produto-card{
-    background-color: #dddddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    box-sizing: border-box;
-    padding: 15px;
-    text-align: center;
-    transition: transform 0.2s;
-}
-.produto-card:hover {
-    transform: scale(1.05);
-}
-.produto-card-info {
-    flex: 1;
-    margin-top: 10px;
-    padding: 6px 12px;
-    background-color: #767676;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-main);
+    text-decoration: none;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+    overflow: hidden;
 }
 
-.lista-clientes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 200px);
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-}
-.cliente-card{
-    background-color: #dddddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    box-sizing: border-box;
-    padding: 15px;
-    text-align: center;
-    transition: transform 0.2s;
-}
-.cliente-card:hover {
-    transform: scale(1.05);
-}
-.cliente-card-info {
-    flex: 1;
-    margin-top: 10px;
-    padding: 6px 12px;
-    background-color: #767676;
-    color: white;
-    border: none;
-    border-radius: 4px;
+.dash-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.lista-vendas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 200px);
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
+.dash-btn:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: var(--border-hover);
 }
-.recibo-card{
-    background-color: #dddddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+.dash-btn:hover::before {
+    opacity: 1;
+}
+
+.dash-btn-titulo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+    width: 100%;
+}
+
+/* Modals */
+.modal {
+    margin: auto;
+    padding: 32px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    background: var(--bg-card);
+    width: 90%;
+    max-width: 500px;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+}
+.modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+.modal h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.modal-entradas {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.modal-entradas label {
+    font-size: 0.95rem;
+    color: var(--text-sub);
+    font-weight: 600;
+}
+.modal-entradas input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.modal-entradas input:focus {
+    border-color: var(--primary);
+}
+.modal-botoes {
+    display: flex;
+    gap: 15px;
     justify-content: center;
-    box-sizing: border-box;
-    padding: 15px;
-    text-align: center;
-    transition: transform 0.2s;
 }
-.recibo-card:hover {
-    transform: scale(1.05);
-}
-.recibo-card-info {
-    flex: 1;
-    margin-top: 10px;
-    padding: 6px 12px;
-    background-color: #767676;
+.btn-modal-salvar {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+}
+.btn-modal-cancelar {
+    background: #e2e8f0;
+    color: var(--text-main);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
 }

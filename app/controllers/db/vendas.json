@@ -1,0 +1,1 @@
+[{"id": "7d797c57f73f45d78d4c1e85e6aee951", "data": "11-07-2026 10:24:27", "cliente": {"nome": "jao", "cpf": "12345678902"}, "total": 33.4, "itens": [{"produto": {"nome": "Arroz 5kg", "preco": 24.9, "qtd_estoque": 15}, "quantidade": 1}, {"produto": {"nome": "Feij\u00e3o 1kg", "preco": 8.5, "qtd_estoque": 22}, "quantidade": 1}]}]

@@ -1,28 +1,29 @@
 % link_css = '<link rel="stylesheet" href="/static/css/admin.css">'
 % rebase('app/views/html/base.tpl', titulo_pagina='Gerenciamento de Clientes', css_extra=link_css)
 
-<div class="conteudo">
-    <h1>Gerenciamento de Clientes</h1>
-    <h2>Lista de Produtos</h2>
-    <div class="lista-clientes">
+<div class="w-100" style="max-width: 1200px; margin: 0 auto;">
+    <h1 class="text-center mb-20">Gerenciamento de Clientes</h1>
+
+    <div class="grid-cards">
         % for cliente in get('lista_clientes',[]):
-        <div class="cliente-card">
-            <p><strong>{{cliente['nome']}}</strong></p>
-            <img src="/static/img/user-icon.svg" style="width: 100px; height: 100px; object-fit: contain; align-self: center;" alt="" aria-hidden="true">
-            <div class="cliente-card-info">CPF: {{cliente['cpf']}}</div>
-            <div class="cliente-card-info">E-Mail: {{cliente['email']}}</div>
-            <div class="cliente-card-info">Total de Compras: {{cliente['compras']}}</div>
-            <div class="cliente-card-btns">
-                <button type="button" class="btn-editar"
+        <div class="glass-card text-center" style="padding: 20px;">
+            <p style="font-size: 1.2rem; margin-bottom: 10px;"><strong>{{cliente['nome']}}</strong></p>
+            <img src="/static/img/user-icon.svg" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px;" alt="" aria-hidden="true">
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 5px;">CPF: {{cliente['cpf']}}</p>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 5px;">{{cliente['email']}}</p>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 15px;">Compras: {{cliente['compras']}}</p>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn-warning"
                         data-nome="{{cliente['nome']}}"
                         data-cpf="{{cliente['cpf']}}"
                         data-idade="{{cliente['idade']}}"
                         data-email="{{cliente['email']}}"
                         onclick="abrirModalEditarCliente(this)">
-                    Editar Cliente
+                    Editar
                 </button>
                 <form action="/admin/clientes/excluir/{{cliente['cpf']}}" method="POST">
-                    <button type="submit" class="btn-excluir" onclick="return confirm('Clique novamente para excluir.')">Excluir Cliente</button>
+                    <button type="submit" class="btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</button>
                 </form>
             </div>
         </div>
@@ -48,12 +49,11 @@
             <label for="edit-email">E-Mail do Cliente:</label>
             <input type="text" id="edit-email" name="email" required>
 
-            <label for="edit-senha">Nova Senha do Cliente:</label>
-            <small>Deixe em branco para manter a atual.</small>
-            <input type="password" id="edit-senha" name="senha">
+            <label for="edit-senha">Nova Senha:</label>
+            <input type="password" id="edit-senha" name="senha" placeholder="Deixe em branco para manter a atual">
         </div>
         <div class="modal-botoes">
-            <button class="btn-modal-salvar" type="submit" onclick="return confirm('Deseja realmente alterar os dados do Cliente?')">Salvar Alterações</button>
+            <button class="btn-modal-salvar" type="submit" onclick="return confirm('Deseja realmente alterar os dados do Cliente?')">Salvar</button>
             <button class="btn-modal-cancelar" type="button" onclick="document.getElementById('editar-cliente').close()">Cancelar</button>
         </div>
     </form>
@@ -62,5 +62,14 @@
 <script src="/static/js/admin.js"></script>
 
 % if get('erro'):
-<script>alert("Erro:\n{{erro}}")</script>
+<div id="toast-erro" class="toast erro">{{erro}}</div>
+<script>
+    setTimeout(function() {
+        var toast = document.getElementById('toast-erro');
+        if(toast) {
+            toast.style.opacity = '0';
+            setTimeout(function() { toast.style.display = 'none'; }, 500);
+        }
+    }, 3000);
+</script>
 % end
