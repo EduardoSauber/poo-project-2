@@ -13,6 +13,8 @@ from app.models.produto import Produto
 
 from app.models.cliente import Cliente
 from app.controllers.loja_controllers import LojaController
+from app.models.recibo import Recibo
+
 
 class Application():
 
@@ -63,7 +65,8 @@ class Application():
                         usuario_admin = isinstance(usuario, Administrador) if logado else False,
                         usuario_nome = usuario.get_nome() if logado else '',
                         total_clientes = len(self.mercado.lista_clientes),
-                        total_produtos = len(self.mercado.lista_produtos)
+                        total_produtos = len(self.mercado.lista_produtos),
+                        total_vendas = len(self.mercado.lista_vendas)
                         )
 
     def render_admin_produtos(self,usuario:Cliente|Administrador=None,erro=None):
@@ -184,6 +187,37 @@ class Application():
 
         return {'ok': False, 'erro': 'Nenhuma alteração feita.'}
 
+    def render_admin_vendas(self,usuario:Cliente|Administrador=None,erro=None):
+        logado = usuario is not None
+        lista_vendas = [v.to_dict(full=False) for v in self.mercado.lista_vendas]
+        receita = 0
+        receita += sum(v['total'] for v in lista_vendas)
+        return template('app/views/html/admin_vendas',
+                        titulo_pagina = 'Gerenciamento de Vendas',
+                        logado = logado,
+                        usuario_admin = isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome = usuario.get_nome() if logado else '',
+                        lista_vendas = lista_vendas,
+                        receita_total= receita,
+                        total_vendas = len(lista_vendas),
+                        erro=erro
+                        )
+
+    def render_admin_recibo(self,usuario:Cliente|Administrador=None,recibo_id:str="",erro=None):
+        logado = usuario is not None
+        recibo_dict = {}
+        for recibo in self.mercado.lista_vendas:
+            if recibo.get_id() == recibo_id:
+                recibo_dict = recibo.to_dict()
+                break
+        return template('app/views/html/admin_recibo',
+                        titulo_pagina = 'Recibo da Compra',
+                        logado = logado,
+                        usuario_admin = isinstance(usuario, Administrador) if logado else False,
+                        usuario_nome = usuario.get_nome() if logado else '',
+                        recibo=recibo_dict,
+                        erro=erro
+                        )
 
     def __seed_admin_padrao(self):
         if not self.mercado.lista_administradores:
@@ -329,7 +363,7 @@ class Application():
                     total=usuario.carrinho.total
                     )
 
-    def confirmar_compra(self, usuario) -> dict:
+    def confirmar_compra(self, usuario:Cliente) -> dict:
         if not usuario.carrinho.lista_items:
             return {'ok': False, 'erro': 'Carrinho vazio'}
         
@@ -339,8 +373,10 @@ class Application():
         recibo = self.mercado.emitir_recibo(usuario)
 
         usuario.carrinho.limpar_carrinho()
+        usuario.set_compras(usuario.get_compras()+1)
 
         self.gerenciador_persistencia.salvar_produtos(self.mercado)
         self.gerenciador_persistencia.salvar_clientes(self.mercado)
+        self.gerenciador_persistencia.salvar_vendas(self.mercado)
 
         return {'ok': True, 'recibo': recibo.to_dict()}

@@ -16,6 +16,9 @@ class Recibo:
         self.__itens = []
         self.__total = 0.0
 
+    def get_id(self):
+        return self.__id
+
     def set_id(self,recibo_id:Optional[str]=None):
         if not recibo_id:
             self.__id = uuid.uuid4().hex
@@ -46,17 +49,19 @@ class Recibo:
         else:
             self.__total = round(total,2)
 
-    def to_dict(self) -> dict[str,Any]:
-        itens_formatados = []
-        for c_produto in self.__itens:
-            itens_formatados.append({
-                'produto': c_produto['produto'].to_dict(),
-                'quantidade': c_produto['quantidade']
-            })
-        return {
-            "id"                : self.__id,
-            "data"              : self.__data,
-            "cliente"           : self.__cliente,
-            "itens"             : itens_formatados,
-            "total"             : self.__total
+    def to_dict(self,full:bool=True) -> dict[str,Any]:
+        data = {
+            "id": self.__id,
+            "data": self.__data,
+            "cliente": self.__cliente,
+            "total": self.__total
         }
+        if full:
+            itens_formatados = []
+            for c_produto in self.__itens:
+                itens_formatados.append({
+                    'produto': c_produto['produto'].to_dict(),
+                    'quantidade': c_produto['quantidade']
+                })
+            data["itens"] = itens_formatados
+        return data
