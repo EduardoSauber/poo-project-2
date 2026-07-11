@@ -20,7 +20,7 @@
         <button class="dash-btn" onclick="location.href='/admin/vendas'">
             <span class="dash-btn-titulo">Gerenciamento de Vendas</span>
             <img src="static/img/cart-icon.svg" style="width: 100px; height: 100px; object-fit: contain;" alt="" aria-hidden="true">
-            Vendas totais:
+            Vendas totais: {{total_vendas}}
         </button>
     </div>
 </div>

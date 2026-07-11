@@ -65,7 +65,8 @@ class Application():
                         usuario_admin = isinstance(usuario, Administrador) if logado else False,
                         usuario_nome = usuario.get_nome() if logado else '',
                         total_clientes = len(self.mercado.lista_clientes),
-                        total_produtos = len(self.mercado.lista_produtos)
+                        total_produtos = len(self.mercado.lista_produtos),
+                        total_vendas = len(self.mercado.lista_vendas)
                         )
 
     def render_admin_produtos(self,usuario:Cliente|Administrador=None,erro=None):
