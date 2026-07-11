@@ -1,1 +1,1 @@
-[{"cpf": "12345678902", "nome": "jao", "email": "jao@email", "idade": 15, "saldo": 0.0, "carrinho": {"itens": [], "total": 0.0}, "senha": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"}]
+[{"cpf": "12345678902", "nome": "jao", "email": "jao@email", "idade": 15, "compras": 1, "carrinho": {"itens": [], "total": 0.0}, "senha": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"}]

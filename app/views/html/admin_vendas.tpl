@@ -1,23 +1,29 @@
 % link_css = '<link rel="stylesheet" href="/static/css/admin.css">'
-% rebase('app/views/html/base.tpl', titulo_pagina=titulo_pagina, logado=logado, usuario_admin=usuario_admin, usuario_nome=usuario_nome, css_extra=link_css)
+% rebase('app/views/html/base.tpl', titulo_pagina='Gerenciamento de Vendas', css_extra=link_css)
 
-<div class="conteudo">
-    <h1>Gerenciamento de Vendas</h1>
-    Receita Total: R$ {{f"{receita_total:.2f}"}}
-    Quantidade de Vendas Realizadas: {{total_vendas}}
-    <h2>Lista de Vendas</h2>
-    <div class="lista-vendas">
+<div class="w-100" style="max-width: 1200px; margin: 0 auto;">
+    <h1 class="text-center mb-20">Gerenciamento de Vendas</h1>
+    
+    <div class="glass-card text-center mb-20" style="max-width: 600px;">
+        <h3>Resumo</h3>
+        <p>Receita Total: <strong>R$ {{f"{receita_total:.2f}"}}</strong></p>
+        <p>Vendas Realizadas: <strong>{{total_vendas}}</strong></p>
+    </div>
+
+    <h2 class="text-center mb-20">Lista de Vendas</h2>
+    
+    <div class="grid-cards">
         % for recibo in get('lista_vendas',[]):
-        <div class="recibo-card">
-            <img src="/static/img/box-icon.svg" style="width: 100px; height: 100px; object-fit: contain; align-self: center;" alt="" aria-hidden="true">
-            <div class="recibo-card-info">Cliente: {{recibo['cliente']['nome']}} (CPF:{{recibo['cliente']['cpf']}})</div>
-            <div class="recibo-card-info">Data: {{recibo['data']}}</div>
-            <div class="recibo-card-info">Total: R$ {{recibo['total']}}</div>
-            <div class="recibo-card-btns">
-                <form action="/admin/vendas/{{recibo['id']}}" method="GET">
-                    <button type="submit" class="btn-abrir">Abrir Recibo</button>
-                </form>
-            </div>
+        <div class="glass-card text-center" style="padding: 20px;">
+            <img src="/static/img/cart-icon.svg" style="width: 60px; height: 60px; object-fit: contain; margin-bottom: 15px;" alt="" aria-hidden="true">
+            <p style="font-weight: 600; margin-bottom: 5px;">{{recibo['cliente']['nome']}}</p>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 5px;">CPF: {{recibo['cliente']['cpf']}}</p>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 5px;">Data: {{recibo['data']}}</p>
+            <p style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">Total: R$ {{recibo['total']}}</p>
+            
+            <form action="/admin/vendas/{{recibo['id']}}" method="GET">
+                <button type="submit" class="btn-primary" style="padding: 8px 16px;">Ver Detalhes</button>
+            </form>
         </div>
         % end
     </div>
