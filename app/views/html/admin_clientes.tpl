@@ -11,7 +11,7 @@
             <img src="/static/img/user-icon.svg" style="width: 100px; height: 100px; object-fit: contain; align-self: center;" alt="" aria-hidden="true">
             <div class="cliente-card-info">CPF: {{cliente['cpf']}}</div>
             <div class="cliente-card-info">E-Mail: {{cliente['email']}}</div>
-            <div class="cliente-card-info">Total de Compras: </div>
+            <div class="cliente-card-info">Total de Compras: {{cliente['compras']}}</div>
             <div class="cliente-card-btns">
                 <button type="button" class="btn-editar"
                         data-nome="{{cliente['nome']}}"

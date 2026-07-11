@@ -6,15 +6,15 @@ from typing import Any
 class Cliente(Pessoa):
     def __init__(self,cpf:str,nome:str,email:str,idade:int,senha:str,db_read:bool):
         super().__init__(cpf=cpf,nome=nome,email=email,idade=idade,senha=senha,db_read=db_read)
-        self.__saldo = 0.0
+        self.__compras = 0
         self.carrinho = Carrinho()
 
-    def get_saldo(self):
-        return self.__saldo
-    def set_saldo(self,valor:float) -> bool:
+    def get_compras(self):
+        return self.__compras
+    def set_compras(self,valor:float) -> bool:
         if not valor:
             return False
-        self.__saldo = valor
+        self.__compras = valor
         return True
 
     def to_dict(self,publico:bool=True) -> dict[str,Any]:
@@ -23,7 +23,7 @@ class Cliente(Pessoa):
             'nome'  : self.get_nome(),
             'email' : self.email,
             'idade' : self.idade,
-            'saldo' : self.get_saldo()
+            'compras' : self.get_compras()
         }
         if not publico:
             data['carrinho'] = self.carrinho.to_dict()

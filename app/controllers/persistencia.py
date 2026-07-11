@@ -79,7 +79,7 @@ class GerenciadorPersistencia:
                         db_read = True
                     )
                     mercado.cadastrar_cliente(cliente=novo_cliente)
-                    novo_cliente.set_saldo(c_dict['saldo'])
+                    novo_cliente.set_compras(c_dict.get('compras',0))
                     for item in c_dict['carrinho']['itens']:
                         prod_dict = item['produto']
                         qtd = item['quantidade']

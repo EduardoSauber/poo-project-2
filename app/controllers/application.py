@@ -362,7 +362,7 @@ class Application():
                     total=usuario.carrinho.total
                     )
 
-    def confirmar_compra(self, usuario) -> dict:
+    def confirmar_compra(self, usuario:Cliente) -> dict:
         if not usuario.carrinho.lista_items:
             return {'ok': False, 'erro': 'Carrinho vazio'}
         
@@ -372,6 +372,7 @@ class Application():
         recibo = self.mercado.emitir_recibo(usuario)
 
         usuario.carrinho.limpar_carrinho()
+        usuario.set_compras(usuario.get_compras()+1)
 
         self.gerenciador_persistencia.salvar_produtos(self.mercado)
         self.gerenciador_persistencia.salvar_clientes(self.mercado)
