@@ -4,6 +4,7 @@ from bottle import redirect, template, response
 
 from functools import wraps
 from app.models.administrador import Administrador
+from app.models.cliente import Cliente
 
 app = Bottle()
 ctl = Application()
@@ -96,7 +97,8 @@ def requer_login(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         id_sessao = request.get_cookie('sessao', secret='chave-secreta')
-        if not ctl.get_usuario_logado(id_sessao):
+        usuario = ctl.get_usuario_logado(id_sessao)
+        if not usuario or not isinstance(usuario, Cliente):
             return redirect('/login')
         return func(*args, **kwargs)
     return wrapper
