@@ -1,4 +1,5 @@
 % rebase('app/views/html/base.tpl', titulo_pagina=titulo_pagina, logado=logado, usuario_admin=usuario_admin, usuario_nome=usuario_nome, css_extra='')
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <div class="glass-card mt-20" style="max-width: 800px;">
     <h2>Revisão do Pedido</h2>
@@ -22,3 +23,11 @@
         <button type="submit" class="btn-primary">Confirmar Compra</button>
     </form>
 </div>
+
+<script>
+    const socket = io();
+    socket.on('atualizar_vitrine',function(dados) {
+        alert(dados.mensagem);
+        location.reload();
+    });
+</script>

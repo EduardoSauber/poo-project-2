@@ -1,4 +1,5 @@
 % rebase('app/views/html/base.tpl', titulo_pagina=titulo_pagina, logado=logado, usuario_admin=usuario_admin, usuario_nome=usuario_nome, css_extra='')
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <div class="w-100" style="max-width: 1000px; margin: 0 auto;">
     <h2 class="mb-20">Meu Carrinho</h2>
@@ -42,3 +43,10 @@
     % end
 </div>
 
+<script>
+    const socket = io();
+    socket.on('atualizar_vitrine',function(dados) {
+        alert(dados.mensagem);
+        location.reload();
+    });
+</script>
