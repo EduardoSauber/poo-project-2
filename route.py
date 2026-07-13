@@ -1,13 +1,25 @@
+import bottle
+import engineio
+
 from app.controllers.application import Application
-from bottle import Bottle, route, run, request, static_file
+from bottle import Bottle, route, run, request, static_file, BaseRequest
 from bottle import redirect, template, response
 
 from functools import wraps
 from app.models.administrador import Administrador
 from app.models.cliente import Cliente
 
+import eventlet
+from eventlet import wsgi
+import socketio
+
 app = Bottle()
 ctl = Application()
+
+sio = socketio.Server(async_mode = 'eventlet', logger=True, engineio_logger=False)
+# desabilitar o engineio_logger!!!!
+app_wsgi = socketio.WSGIApp(sio,app)
+bottle.debug(True)
 
 
 #-----------------------------------------------------------------------------
@@ -143,6 +155,8 @@ def admin_create_produto():
     evento = ctl.cadastrar_produto(data=product_data)
     if not evento.get('ok'):
         response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
+    else:
+        sio.emit('atualizar_vitrine',{'mensagem':'A vitrine foi atualizada.'})
     redirect('/admin/produtos')
 
 @app.route('/admin/produtos/excluir/<nome>', method=['POST'])
@@ -151,6 +165,8 @@ def admin_delete_produto(nome):
     evento = ctl.excluir_produto(nome=nome)
     if not evento.get('ok'):
         response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
+    else:
+        sio.emit('atualizar_vitrine',{'mensagem':'A vitrine foi atualizada.'})
     redirect('/admin/produtos')
 
 @app.route('/admin/produtos/editar', method=['POST'])
@@ -165,6 +181,8 @@ def admin_edit_produto():
     evento = ctl.editar_produto(product_data)
     if not evento.get('ok'):
         response.set_cookie('notif-erro', evento['erro'], secret='erro_secreto', path='/')
+    else:
+        sio.emit('atualizar_vitrine',{'mensagem':'A vitrine foi atualizada.'})
     redirect('/admin/produtos')
 
 @app.route('/admin/clientes', method=['GET'])
@@ -294,10 +312,20 @@ def checkout_confirmar():
     else:
         return redirect('/checkout')
 
+#-----------------------------------------------------------------------------
+# Eventos socket.io:
+
+@sio.event
+def connect(sid):
+    print(f"(SIO - CONNECT) Usuário conectado. SID: {sid}")
+@sio.event
+def disconnect(sid):
+    print(f"(SIO - DISCONNECT) Usuário desconectado. SID: {sid}")
     
 #-----------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
 
-    run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)
+    #run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)
+    wsgi.server(eventlet.listen(('0.0.0.0',8080)), app_wsgi)

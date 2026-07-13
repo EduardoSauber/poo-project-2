@@ -1,5 +1,6 @@
 % link_css = '<link rel="stylesheet" type="text/css" href="static/css/vitrine.css">'
 % rebase('app/views/html/base.tpl', titulo_pagina=titulo_pagina, logado=logado, usuario_admin=usuario_admin, usuario_nome=usuario_nome, css_extra=link_css)
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <div class="grid-cards w-100" style="padding: 40px 0; max-width: 1400px; margin: 0 auto;">
     % if get('sucesso'):
@@ -45,3 +46,11 @@
     </div>
     % end
 </div>
+
+<script>
+    const socket = io();
+    socket.on('atualizar_vitrine',function(dados) {
+        // console.log("Sinal recebido do servidor:", dados.mensagem);
+        location.reload();
+    });
+</script>
