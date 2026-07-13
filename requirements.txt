@@ -1,3 +1,5 @@
 bottle
 jinja2
 filelock
+eventlet
+python-socketio
